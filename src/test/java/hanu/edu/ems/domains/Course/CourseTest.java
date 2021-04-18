@@ -1,19 +1,22 @@
-package hanu.edu.ems.domains.Course.entity;
+package hanu.edu.ems.domains.Course;
 
+import hanu.edu.ems.domains.Course.entity.Course;
 import hanu.edu.ems.domains.CourseRelease.entity.CourseRelease;
 import hanu.edu.ems.domains.Department.entity.Department;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.List;
 
 @SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class CourseTest {
     @Mock
     Department department;
@@ -36,17 +39,17 @@ public class CourseTest {
 
     @Test
     void testSetRegistrationCode() {
-        course.setRegistrationCode("registrationCode");
+        course.setRegistrationCode("FIT2DMA");
     }
 
     @Test
     void testSetName() {
-        course.setName("name");
+        course.setName("DMA");
     }
 
     @Test
     void testSetNumberOfCredits() {
-        course.setNumberOfCredits(0);
+        course.setNumberOfCredits(3);
     }
 
     @Test
@@ -54,19 +57,19 @@ public class CourseTest {
         course.setRequiredSchoolYear(0);
     }
 
-    @Test
-    void testSetActiveReleasesCount() {
-        course.setActiveReleasesCount(0);
-    }
+//    @Test
+//    void testSetActiveReleasesCount() {
+//        course.setActiveReleasesCount(0);
+//    }
 
     @Test
     void testSetCreatedAt() {
-        course.setCreatedAt(LocalDateTime.of(2021, Month.MARCH, 20, 13, 51, 41));
+        course.setCreatedAt(LocalDateTime.now());
     }
 
     @Test
     void testSetUpdatedAt() {
-        course.setUpdatedAt(LocalDateTime.of(2021, Month.MARCH, 20, 13, 51, 41));
+        course.setUpdatedAt(LocalDateTime.now());
     }
 
     public static Course getExampleCourse() {

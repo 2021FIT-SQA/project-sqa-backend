@@ -1,13 +1,11 @@
 package hanu.edu.ems.domains.Course;
 
-import hanu.edu.ems.domains.Course._sample.StudentDataSample;
+import hanu.edu.ems.domains.Course._sample.CourseDataSample;
+import hanu.edu.ems.domains.Course.dto.CreateCourseDTO;
+import hanu.edu.ems.domains.Course.entity.Course;
 import hanu.edu.ems.domains.Department.DepartmentRepository;
 import hanu.edu.ems.domains.Department._sample.DepartmentDataSample;
 import hanu.edu.ems.domains.Department.entity.Department;
-import hanu.edu.ems.domains.Student.StudentRepository;
-import hanu.edu.ems.domains.Student.StudentService;
-import hanu.edu.ems.domains.Student.dto.CreateStudentDTO;
-import hanu.edu.ems.domains.Student.entity.Student;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
@@ -37,16 +35,16 @@ import static org.mockito.BDDMockito.given;
 @TestPropertySource(locations = "classpath:application-test.properties")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
-class StudentServiceImplTest {
+class CourseServiceImplTest {
 
     @MockBean
-    private StudentRepository studentRepository;
+    private CourseRepository courseRepository;
 
     @MockBean
     private DepartmentRepository departmentRepository;
 
     @Autowired
-    private StudentService studentService;
+    private CourseService courseService;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -57,16 +55,16 @@ class StudentServiceImplTest {
     void whenCreateWithValidData_thenReturnSuccessResult() {
 
         // Given
-        Student student = StudentDataSample.getExampleValidStudent();
-        student.setDepartment(department);
-        given(studentRepository.save(any(Student.class))).willReturn(student);
+        Course course = CourseDataSample.getExampleValidCourse();
+        course.setDepartment(department);
+        given(courseRepository.save(any(Course.class))).willReturn(course);
 
         given(departmentRepository.findById(any())).willReturn(Optional.of(department));
 
         // When
-        CreateStudentDTO createStudentDTO = StudentDataSample.getExampleValidCreateStudentDTO();
-        createStudentDTO.setDepartmentID(department.getId());
-        Student result = studentService.create(createStudentDTO);
+        CreateCourseDTO createCourseDTO = CourseDataSample.getExampleValidCreateCourseDTO();
+        createCourseDTO.setDepartmentID(department.getId());
+        Course result = courseService.create(createCourseDTO);
 
         // Then
         assertNotNull(result);
@@ -75,9 +73,9 @@ class StudentServiceImplTest {
     @Test
     void whenUpdateExistingWithValidData_thenReturnSuccessResult() {
         // Given
-        Student student = StudentDataSample.getExampleValidStudent();
+        Course Course = CourseDataSample.getExampleValidCourse();
 
-        given(studentRepository.save(any(Student.class))).willReturn(student);
+        given(courseRepository.save(any(Course.class))).willReturn(Course);
 
         given(departmentRepository.findById(any())).willReturn(Optional.of(department));
         // When
@@ -90,19 +88,19 @@ class StudentServiceImplTest {
         // Given
 
         // When
-        studentService.deleteById(1L);
+        courseService.deleteById(1L);
 
         // Then
     }
 
     @Test
     void whenFindAll_thenReturnResult() {
-        List<Student> expectedResults = StudentDataSample.get3Students();
+        List<Course> expectedResults = CourseDataSample.get3Courses();
         // Given
-        given(studentRepository.findAll()).willReturn(expectedResults);
+        given(courseRepository.findAll()).willReturn(expectedResults);
 
         // When
-        List<Student> receivedResults = studentService.findAll();
+        List<Course> receivedResults = courseService.findAll();
 
         // Then
         assertEquals(expectedResults.size(), receivedResults.size());
@@ -115,14 +113,14 @@ class StudentServiceImplTest {
     @Test
     void whenFindMany_thenReturnPagedResult() {
         // Given
-        Page<Student> expectedResults = new PageImpl<>(StudentDataSample.get3Students());
+        Page<Course> expectedResults = new PageImpl<>(CourseDataSample.get3Courses());
 
         Pageable pageable = PageRequest.of(0, 10);
 
         // Given
-        given(studentRepository.findAll(pageable)).willReturn(expectedResults);
+        given(courseRepository.findAll(pageable)).willReturn(expectedResults);
         // When
-        Page<Student> receivedResults = studentService.findAll(pageable);
+        Page<Course> receivedResults = courseService.findAll(pageable);
         // Then
         assertEquals(expectedResults.getSize(), receivedResults.getSize());
 
@@ -134,11 +132,11 @@ class StudentServiceImplTest {
     @Test
     void whenGetByIdOfExisting_thenReturnExistingResult() {
         // Given
-        Student expected = StudentDataSample.getExampleValidStudent();
-        given(studentRepository.findById(1L)).willReturn(Optional.of(expected));
+        Course expected = CourseDataSample.getExampleValidCourse();
+        given(courseRepository.findById(1L)).willReturn(Optional.of(expected));
 
         // When
-        Student result = studentService.getById(1L);
+        Course result = courseService.getById(1L);
         // Then
 
         assertEquals(result, expected);
@@ -147,76 +145,76 @@ class StudentServiceImplTest {
     @Test
     void testFindAllByDepartmentId() {
         // Given
-        List<Student> students = StudentDataSample.get3Students();
-        given(studentRepository.findAllByDepartmentId(1L)).willReturn(students);
+        List<Course> courses = CourseDataSample.get3Courses();
+        given(courseRepository.findAllByDepartmentId(1L)).willReturn(courses);
         // When
-        List<Student> results = studentService.findByDepartmentId(1L);
+        List<Course> results = courseService.findAllByDepartmentID(1L);
 
         // Then
-        assertEquals(students.size(), results.size());
+        assertEquals(courses.size(), results.size());
 
-        for (int i = 0; i < students.size(); i++) {
-            assertEquals(students.get(i).toString(), results.get(i).toString());
+        for (int i = 0; i < courses.size(); i++) {
+            assertEquals(courses.get(i).toString(), results.get(i).toString());
         }
     }
 
-    @Test
-    void testFindAllByCourseReleaseId() {
-        // Given
-        List<Student> students = StudentDataSample.get3Students();
-
-        Page<Student> expectedResults = new PageImpl<>(students);
-        Pageable pageable = PageRequest.of(0, 10);
-
-        given(studentRepository.findByCourseReleaseId(1L, pageable)).willReturn(expectedResults);
-        // When
-        Page<Student> results = studentService.findByCourseReleaseId(1L, pageable);
-
-        // Then
-        assertEquals(expectedResults.getSize(), results.getSize());
-
-        for (int i = 0; i < results.getSize(); i++) {
-            assertEquals(students.get(i).toString(), results.getContent().get(i).toString());
-        }
-    }
+//    @Test
+//    void testFindAllByCourseReleaseId() {
+//        // Given
+//        List<Course> Courses = CourseDataSample.get3Courses();
+//
+//        Page<Course> expectedResults = new PageImpl<>(Courses);
+//        Pageable pageable = PageRequest.of(0, 10);
+//
+//        given(CourseRepository.findByCourseReleaseId(1L, pageable)).willReturn(expectedResults);
+//        // When
+//        Page<Course> results = CourseService.findByCourseReleaseId(1L, pageable);
+//
+//        // Then
+//        assertEquals(expectedResults.getSize(), results.getSize());
+//
+//        for (int i = 0; i < results.getSize(); i++) {
+//            assertEquals(Courses.get(i).toString(), results.getContent().get(i).toString());
+//        }
+//    }
 
     @Test
     void testFindByCourseId() {
         // Given
-        List<Student> students = StudentDataSample.get3Students();
+        List<Course> Courses = CourseDataSample.get3Courses();
 
-        Page<Student> expectedResults = new PageImpl<>(students);
+        Page<Course> expectedResults = new PageImpl<>(Courses);
         Pageable pageable = PageRequest.of(0, 10);
 
-        given(studentRepository.findByCourseId(1L, pageable)).willReturn(expectedResults);
+        given(courseRepository.findAllByDepartmentId(1L, pageable)).willReturn(expectedResults);
         // When
-        Page<Student> results = studentService.findByCourseId(1L, pageable);
+        Page<Course> results = courseService.findAllByDepartmentID(1L, pageable);
 
         // Then
         assertEquals(expectedResults.getSize(), results.getSize());
 
         for (int i = 0; i < results.getSize(); i++) {
-            assertEquals(students.get(i).toString(), results.getContent().get(i).toString());
+            assertEquals(Courses.get(i).toString(), results.getContent().get(i).toString());
         }
     }
 
     @Test
     void testFindByKeyWord() {
         // Given
-        List<Student> students = StudentDataSample.get3Students();
+        List<Course> courses = CourseDataSample.get3Courses();
 
-        Page<Student> expectedResults = new PageImpl<>(students);
+        Page<Course> expectedResults = new PageImpl<>(courses);
         Pageable pageable = PageRequest.of(0, 10);
 
-        given(studentRepository.findAllByKeyword("Minh", pageable)).willReturn(expectedResults);
+        given(courseRepository.findAllByNameLike("DMA", pageable)).willReturn(expectedResults);
         // When
-        Page<Student> results = studentService.findByKeyWord("Minh", pageable);
+        Page<Course> results = courseService.findAllByNameLike("DMA", pageable);
 
         // Then
         assertEquals(expectedResults.getSize(), results.getSize());
 
         for (int i = 0; i < results.getSize(); i++) {
-            assertEquals(students.get(i).toString(), results.getContent().get(i).toString());
+            assertEquals(courses.get(i).toString(), results.getContent().get(i).toString());
         }
     }
 }
